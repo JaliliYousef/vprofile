@@ -1,60 +1,27 @@
 pipeline {
     agent any
-
     tools {
         maven "MAVEN3.9"
         jdk "JDK17"
     }
-
+    
     environment {
-        NEXUS_URL = 'http://35.170.200.163:8081'
-        NEXUS_REPO = 'vpro-maven-group'
+        SNAP_REPO = 'vprofile-snapshot'
+		NEXUS_USER = 'admin'
+		NEXUS_PASS = 'admin123'
+		RELEASE_REPO = 'vprofile-release'
+		CENTRAL_REPO = 'vpro-maven-central'
+		NEXUSIP = '35.170.200.163'
+		NEXUSPORT = '8081'
+		NEXUS_GRP_REPO = 'vpro-maven-group'
+        NEXUS_LOGIN = 'nexuslogin'
     }
 
     stages {
-        stage('Generate settings.xml') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'nexus-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    sh '''
-                    cat <<EOF > settings.xml
-<settings xmlns="http://maven.apache.org/SETTINGS/1.1.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd">
-
-  <servers>
-    <server>
-      <id>vpro-maven-group</id>
-      <username>${USERNAME}</username>
-      <password>${PASSWORD}</password>
-    </server>
-  </servers>
-
-  <mirrors>
-    <mirror>
-      <id>vpro-maven-central</id>
-      <name>nexus mirror</name>
-      <url>http://35.170.200.163:8081/repository/vpro-maven-group/</url>
-      <mirrorOf>*</mirrorOf>
-    </mirror>
-  </mirrors>
-
-</settings>
-EOF
-                    '''
-                }
-            }
-        }
-
-        stage('Maven Build') {
+        stage('Build'){
             steps {
                 sh 'mvn -s settings.xml -DskipTests install'
             }
-        }
-    }
-
-    post {
-        always {
-            sh 'rm -f settings.xml'
         }
     }
 }
