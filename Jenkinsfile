@@ -1,3 +1,5 @@
+def COLOR_MAP = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'warning']
+
 pipeline {
     agent any
     tools {
@@ -17,6 +19,7 @@ pipeline {
         NEXUS_LOGIN = 'nexuslogin'
         SONARSERVER = 'sonarserver'
         SONARSCANNER = 'sonarscanner'
+        BUILD_TIMESTAMP = "${new Date().format('yyyyMMddHHmmss')}"
     }
 
     stages {
@@ -89,7 +92,9 @@ pipeline {
                 )
             }
         }
-         post {
+    }
+
+    post {
         always {
             echo 'Slack Notifications.'
             slackSend channel: '#jenkinscicd',
