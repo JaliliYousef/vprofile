@@ -8,6 +8,8 @@
 
 # Technologies
 
+#
+
 - Spring MVC
 - Spring Security
 - Spring Data JPA
@@ -17,7 +19,7 @@
 - MySQL
 - Memcached
 - Rabbitmq
-- ElasticSearch
+- ElasticSearchS
 
 # Database
 
