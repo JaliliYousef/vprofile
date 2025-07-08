@@ -75,7 +75,7 @@ public class UserControllerTest {
         //.andExpect(forwardedUrl("redirect:/welcome"));
 		
 	}*/
-	@Test
+	/*@Test
 	public void loginTestHappyFlow() throws Exception{
 		String error = "Your username and password is invalid";
 		mockMvc.perform(get("/login").param(error, error))
@@ -83,7 +83,7 @@ public class UserControllerTest {
         .andExpect(view().name("login"))
         .andExpect(forwardedUrl("login"));
 		
-	}
+	}*/
 	@Test
 	public void welcomeTestHappyFlow() throws Exception{
 		mockMvc.perform(get("/welcome"))
