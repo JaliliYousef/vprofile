@@ -31,13 +31,13 @@ pipeline {
         }
         stage('Test'){
             steps {
-                sh 'mvn install'
+                sh 'mvn install -s settings.xml'
 
             }
         }
         stage('SonarQube Analysis') {
             steps {
-             sh 'mvn checkstyle:checkstyle'   
+             sh 'mvn checkstyle:checkstyle -s settings.xml'   
             }
         }
 
