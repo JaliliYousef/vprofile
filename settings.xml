@@ -14,13 +14,13 @@
       <username>${NEXUS_USER}</username>
       <password>${NEXUS_PASS}</password>
     </server>
-        <server>
-        <id>${CENTRAL_REPO}</id>
+    <server>
+      <id>${CENTRAL_REPO}</id>
       <username>${NEXUS_USER}</username>
       <password>${NEXUS_PASS}</password>
     </server>
     <server>
-        <id>${NEXUS_GRP_REPO}</id>
+      <id>${NEXUS_GRP_REPO}</id>
       <username>${NEXUS_USER}</username>
       <password>${NEXUS_PASS}</password>
     </server>
@@ -34,5 +34,23 @@
       <mirrorOf>*</mirrorOf>
     </mirror>
   </mirrors>
+
+  <profiles>
+    <profile>
+      <id>use-central-for-plugins</id>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>central</id>
+          <url>https://repo.maven.apache.org/maven2</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>false</enabled></snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+  </profiles>
+
+  <activeProfiles>
+    <activeProfile>use-central-for-plugins</activeProfile>
+  </activeProfiles>
 
 </settings>
