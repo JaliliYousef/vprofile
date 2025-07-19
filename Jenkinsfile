@@ -23,8 +23,10 @@ pipeline {
                 sh 'mvn -s settings.xml -DskipTests install -U'
             }
             post {
-                echo 'Now archiving the dammn artifacts'
-                archiveArtifacts artifacts: '**/*.war'
+                success {
+                   echo 'Now archiving the dammn artifacts'
+                   archiveArtifacts artifacts: '**/*.war'}
+                
             }
         }
         stage('Test'){
