@@ -87,5 +87,34 @@ pipeline {
         }
 
     }
+     post {
+        success {
+            slackSend(
+                channel: "${env.SLACK_CHANNEL}",
+                color: 'good',
+                message: "✅ Job *${env.JOB_NAME}* #${env.BUILD_NUMBER} succeeded.\nCheck: ${env.BUILD_URL}",
+                tokenCredentialId: "${env.SLACK_CREDENTIAL_ID}",
+                customMessage: '',
+                baseUrl: 'https://slack.com/api/',
+                botUser: true
+            )
+        }
+
+        failure {
+            slackSend(
+                channel: "${env.SLACK_CHANNEL}",
+                color: 'danger',
+                message: "❌ Job *${env.JOB_NAME}* #${env.BUILD_NUMBER} failed!\nCheck: ${env.BUILD_URL}",
+                tokenCredentialId: "${env.SLACK_CREDENTIAL_ID}",
+                customMessage: '',
+                baseUrl: 'https://slack.com/api/',
+                botUser: true
+            )
+        }
+
+        always {
+            echo 'Pipeline completed.'
+        }
+    }
 
 }
