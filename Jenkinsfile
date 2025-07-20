@@ -17,6 +17,8 @@ pipeline {
         NEXUS_LOGIN = 'nexuslogin'
         SONARSERVER = 'sonarserver'
         SONARSCANNER = 'sonarscanner'
+        SLACK_CHANNEL = '#jenkinsci' // Channel name in Slack
+        SLACK_CREDENTIAL_ID = 'slackbot-token' // ID in Jenkins Credentials
     }
     stages {
         stage('Build'){
