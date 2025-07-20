@@ -40,7 +40,7 @@ pipeline {
         }
         stage('SonarQube Analysis') {
             steps {
-             sh 'muvn checkstyle:checkstyle -s settings.xml'   
+             sh 'mvn checkstyle:checkstyle -s settings.xml'   
             }
         }
         stage('Sonar Analysis') {
