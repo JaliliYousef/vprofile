@@ -94,7 +94,7 @@ pipeline {
                 color: 'good',
                 message: "✅ Job *${env.JOB_NAME}* #${env.BUILD_NUMBER} succeeded.\nCheck: ${env.BUILD_URL}",
                 tokenCredentialId: "${env.SLACK_CREDENTIAL_ID}",
-                customMessage: '',
+                
                 baseUrl: 'https://slack.com/api/',
                 botUser: true
             )
@@ -106,7 +106,6 @@ pipeline {
                 color: 'danger',
                 message: "❌ Job *${env.JOB_NAME}* #${env.BUILD_NUMBER} failed!\nCheck: ${env.BUILD_URL}",
                 tokenCredentialId: "${env.SLACK_CREDENTIAL_ID}",
-                customMessage: '',
                 baseUrl: 'https://slack.com/api/',
                 botUser: true
             )
