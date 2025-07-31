@@ -1,0 +1,33 @@
+pipeline
+{
+    agent any
+    tools{
+        maven "MAVEN_HOME"
+        jdk "JAVA_HOME"
+    }
+    environment{
+        GIT_URL="https://github.com/DevopsTech12/vprofile-project.git"   
+         }
+    stages{
+        stage("scm chekout")
+        {
+            steps{git branch:'local', url:"$GIT_URL"}
+        }
+        stage("test")
+        {
+            steps{sh 'mvn test'}
+        }
+        stage("build artifact")
+        {
+            steps{sh 'mvn build -Dskiptest'}
+            post{
+                success{
+                    echo "archiving artifact"
+                    sleep 10
+                    archiveArtifacts artifacts: '**/*.war'
+                }
+            }
+        }
+
+    }
+}
