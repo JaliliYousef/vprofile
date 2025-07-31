@@ -3,7 +3,7 @@ pipeline
     agent any
     tools{
         maven "MAVEN_HOME"
-        jdk "JAVA_HOME"
+        jdk "JAVA-17"
     }
     environment{
         GIT_URL="https://github.com/DevopsTech12/vprofile-project.git"   
@@ -11,7 +11,7 @@ pipeline
     stages{
         stage("scm chekout")
         {
-            steps{git branch:'local', url:"$GIT_URL"}
+            steps{ git branch: 'local', url: "$GIT_URL" }
         }
         stage("test")
         {
@@ -19,7 +19,7 @@ pipeline
         }
         stage("build artifact")
         {
-            steps{sh 'mvn build -Dskiptest'}
+            steps{sh 'mvn package -Dskiptest'}
             post{
                 success{
                     echo "archiving artifact"
