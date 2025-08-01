@@ -15,6 +15,8 @@ pipeline {
 		NEXUSPORT = '8081'
 		NEXUS_GRP_REPO = 'patel-maven-group'
         NEXUS_LOGIN = 'nexus'
+        SONARSERVER='sonarserver'
+        SONARSCANNER='sonarscanner'
     }
 
     stages {
@@ -43,10 +45,10 @@ pipeline {
         }
         stage('Sonar Analysis') {
             environment {
-                scannerHome = tool "${sonar}"
+                scannerHome = tool "${SONARSCANNER}"
             }
             steps {
-               withSonarQubeEnv('sonar') {
+               withSonarQubeEnv("${SONARSERVER}") {
                    sh '''${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=vprofile \
                    -Dsonar.projectName=vprofile \
                    -Dsonar.projectVersion=1.0 \
