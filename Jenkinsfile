@@ -6,6 +6,7 @@ pipeline {
     }
     
     environment {
+        PATH = "/usr/local/node16/bin:${env.PATH}"
         SNAP_REPO = 'vprofile-snapshot'
 		NEXUS_USER = 'admin'
 		NEXUS_PASS = 'redhat'
