@@ -28,6 +28,17 @@ pipeline
                 }
             }
         }
+        stage("checkstyle checks")
+        {
+            steps{sh 'mvn chckstyle:checkstyle'}
+        }
+
+        stage("sonar qube analysis")
+        {
+            steps{ withSonarQubeEnv(credentialsId: 'SonarToken') {
+            sh 'mvn sonar:sonar'
+}}
+        }
 
     }
 }
