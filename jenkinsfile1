@@ -30,7 +30,7 @@ pipeline
         }
         stage("checkstyle checks")
         {
-            steps{sh 'mvn chckstyle:checkstyle'}
+            steps{sh 'mvn checkstyle:checkstyle'}
         }
 
         stage("sonar qube analysis")
