@@ -6,7 +6,8 @@ pipeline
         jdk "JAVA-17"
     }
     environment{
-        GIT_URL="https://github.com/DevopsTech12/vprofile-project.git1"   
+        GIT_URL="https://github.com/DevopsTech12/vprofile-project.git1"
+        ECR_REPO = '279684396313.dkr.ecr.ap-south-1.amazonaws.com/vprofileapp'  
          }
     stages{
         stage("scm chekout")
@@ -41,7 +42,8 @@ pipeline
         stage("docker image build")
         {
             steps{
-                docker build -t vprofileapp .
+                script {
+          dockerImage = docker.build("${IMAGE_NAME}:${BUILD_NUMBER}")
             }
         }
         stage ('push image to ECR')
@@ -49,7 +51,7 @@ pipeline
             steps{
                 // This step should not normally be used in your script. Consult the inline help for details.
        withDockerRegistry(credentialsId: 'ecr:ap-south-1:ecrcred', url: '279684396313.dkr.ecr.ap-south-1.amazonaws.com/vprofileapp') {
-       docker push ("$BUILD_NUMBER") }
+       sh "docker push ${ECR_REPO}:latest"("$BUILD_NUMBER") }
             }
         }
 
