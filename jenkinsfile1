@@ -6,7 +6,7 @@ pipeline
         jdk "JAVA-17"
     }
     environment{
-        GIT_URL="https://github.com/DevopsTech12/vprofile-project.git"   
+        GIT_URL="https://github.com/DevopsTech12/vprofile-project.git1"   
          }
     stages{
         stage("scm chekout")
@@ -47,6 +47,14 @@ pipeline
         slackSend channel: '#devops',
         color: '#439FE0',
         message: "✅ *Build SUCCESS* for Job: `${env.JOB_NAME}` Build: #${env.BUILD_NUMBER}\n<${env.BUILD_URL}|Open Build>",
+        teamDomain: 'vbtech-workspace',
+        tokenCredentialId: 'Slack-Jenkins'
+        
+     }
+     failure {
+        slackSend channel: '#devops',
+        color: '#FF0000',
+        message: "❌ *Build FAILED* for Job: `${env.JOB_NAME}` Build: #${env.BUILD_NUMBER}\n<${env.BUILD_URL}|Check Console>",
         teamDomain: 'vbtech-workspace',
         tokenCredentialId: 'Slack-Jenkins'
         
