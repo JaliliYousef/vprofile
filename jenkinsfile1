@@ -46,7 +46,7 @@ pipeline
         always{
         slackSend channel: '#devops', 
         color: '#439FE0', 
-        message: '*${CurrentBuild.current Result}:*job.${env.JOB_NAME}.build.${env.BUILD_NUMBER}', 
+        message: "*${CurrentBuild.current Result}:*job.${env.JOB_NAME}.build.${env.BUILD_NUMBER}", 
         teamDomain: 'vbtech-workspace', 
         tokenCredentialId: 'Slack-Jenkins'
        
