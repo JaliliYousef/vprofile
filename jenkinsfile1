@@ -6,7 +6,7 @@ pipeline
         jdk "JAVA-17"
     }
     environment{
-        GIT_URL="https://github.com/DevopsTech12/vprofile-project.git1"
+        GIT_URL="https://github.com/DevopsTech12/vprofile-project.git"
         ECR_REPO = '279684396313.dkr.ecr.ap-south-1.amazonaws.com/vprofileapp'  
          }
     stages{
