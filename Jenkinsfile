@@ -1,7 +1,7 @@
 pipeline {
     
 	agent any
-	
+	z
 	tools {
 	jdk "JDK17"	
         maven "MAVEN3.9"
