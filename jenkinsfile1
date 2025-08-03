@@ -49,14 +49,12 @@ pipeline
             steps{
                 // This step should not normally be used in your script. Consult the inline help for details.
        withDockerRegistry(credentialsId: 'ecr:ap-south-1:ecrcred', url: '279684396313.dkr.ecr.ap-south-1.amazonaws.com/vprofileapp') {
-       docker push ("$BUILD_NUMBER")
-}
+       docker push ("$BUILD_NUMBER") }
             }
         }
 
-    }
+           }
 
-}
      post {
         success {
         slackSend channel: '#devops',
