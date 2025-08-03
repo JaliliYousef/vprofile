@@ -44,12 +44,12 @@ pipeline
 }
      post {
         success {
-        slackSend ( channel: '#devops', 
-        color: '#439FE0', 
-        message: "✅ *Build SUCCESS* for Job: `${env.JOB_NAME}` Build: #${env.BUILD_NUMBER}\n<${env.BUILD_URL}|Open Build>", 
-        teamDomain: 'vbtech-workspace', 
+        slackSend channel: '#devops',
+        color: '#439FE0',
+        message: "✅ *Build SUCCESS* for Job: `${env.JOB_NAME}` Build: #${env.BUILD_NUMBER}\n<${env.BUILD_URL}|Open Build>",
+        teamDomain: 'vbtech-workspace',
         tokenCredentialId: 'Slack-Jenkins'
-        )
+        
      }
      }
 }
