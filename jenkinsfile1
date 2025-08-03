@@ -7,7 +7,8 @@ pipeline
     }
     environment{
         GIT_URL="https://github.com/DevopsTech12/vprofile-project.git"
-        ECR_REPO = '279684396313.dkr.ecr.ap-south-1.amazonaws.com/vprofileapp'  
+        ECR_REPO = '279684396313.dkr.ecr.ap-south-1.amazonaws.com/vprofileapp'
+        IMAGE_NAME = 'vprofileapp'
          }
     stages{
         stage("scm chekout")
