@@ -5,7 +5,7 @@ FROM tomcat:9.0
 RUN rm -rf /usr/local/tomcat/webapps/*
 
 # Copy your WAR file into the webapps directory
-COPY vprofile-v2.war /usr/local/tomcat/webapps/ROOT.war
+COPY **/*.war /usr/local/tomcat/webapps/ROOT.war
 
 # Expose the default Tomcat port
 EXPOSE 8080
