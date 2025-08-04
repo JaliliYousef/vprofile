@@ -44,7 +44,8 @@ pipeline
         {
             steps {
                 script {
-          dockerImage = docker.build("${IMAGE_NAME}:${BUILD_NUMBER}")
+          dockerImage = docker.build("${IMAGE_NAME}:latest")
+          dockerImage.tag("${ECR_REPO}", "latest")
             }
         }
         }
@@ -53,7 +54,7 @@ pipeline
             steps{
                 // This step should not normally be used in your script. Consult the inline help for details.
        withDockerRegistry(credentialsId: 'ecr:ap-south-1:ecrcred', url: "${ECR_REPO}") {
-       sh "docker push ${ECR_REPO}:latest"("$BUILD_NUMBER") }
+       sh "docker push ${ECR_REPO}:latest" }
             }
         }
 
