@@ -45,7 +45,6 @@ pipeline
             steps {
                 script {
           dockerImage = docker.build("${IMAGE_NAME}:latest")
-          dockerImage.tag("${ECR_REPO}", "latest")
             }
         }
         }
