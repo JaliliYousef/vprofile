@@ -7,7 +7,7 @@ pipeline
     }
     environment{
         GIT_URL="https://github.com/DevopsTech12/vprofile-project.git"
-        ECR_REPO = 'https://279684396313.dkr.ecr.ap-south-1.amazonaws.com/vprofileapp'
+        ECR_REPO = "https://279684396313.dkr.ecr.ap-south-1.amazonaws.com/vprofileapp"
         IMAGE_NAME = 'vprofileapp'
          }
     stages{
@@ -52,7 +52,7 @@ pipeline
         {
             steps{
                 // This step should not normally be used in your script. Consult the inline help for details.
-       withDockerRegistry(credentialsId: 'ecr:ap-south-1:ecrcred', url: '279684396313.dkr.ecr.ap-south-1.amazonaws.com/vprofileapp') {
+       withDockerRegistry(credentialsId: 'ecr:ap-south-1:ecrcred', url: "${ECR_REPO}") {
        sh "docker push ${ECR_REPO}:latest"("$BUILD_NUMBER") }
             }
         }
