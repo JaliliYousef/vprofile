@@ -48,13 +48,6 @@ pipeline
             }
         }
         }
-        stage('TAG docker image') {
-      steps {
-        script {
-          dockerImage.tag("${ECR_REPO}", "latest")
-        }
-      }
-    }
         stage ('push image to ECR')
         {
             steps{
