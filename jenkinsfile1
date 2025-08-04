@@ -52,7 +52,7 @@ pipeline
         {
             steps{
                 // This step should not normally be used in your script. Consult the inline help for details.
-       withDockerRegistry(credentialsId: 'ecr:ap-south-1:ecrcred', url: "${ECR_REPO}") {script {
+       withDockerRegistry(credentialsId: 'ecr:ap-south-1:ecrcred', url: "${ECR_REPO}") {
           dockerImage.tag("${ECR_REPO}", "latest")
           sh "docker push ${ECR_REPO}:latest"
         }
@@ -60,8 +60,6 @@ pipeline
             }
         }
         }
-
-           }
 
      post {
         success {
