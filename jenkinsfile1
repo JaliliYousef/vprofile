@@ -56,8 +56,9 @@ pipeline
           dockerImage.tag("${ECR_REPO}", "latest")
           sh "docker push ${ECR_REPO}:latest"
         }
-  //     sh "docker push ${ECR_REPO}:latest" }
+  //     sh "docker push ${ECR_REPO}:latest"
             }
+        }
         }
 
            }
