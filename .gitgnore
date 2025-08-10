@@ -1,0 +1,15 @@
+# common
+.DS_Store
+*.log
+
+# editors
+.vscode/
+.idea/
+
+# deps/build
+node_modules/
+dist/
+build/
+target/
+venv/
+__pycache__/
