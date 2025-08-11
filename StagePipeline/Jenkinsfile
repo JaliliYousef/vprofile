@@ -4,28 +4,28 @@ pipeline {
         maven "MAVEN3.9"
         jdk "JDK17"
     }
-    
+
     environment {
-        SNAP_REPO = 'vprofile-snapshot'
-		NEXUS_USER = 'admin'
-		NEXUS_PASS = 'admin123'
-		RELEASE_REPO = 'vprofile-release'
-		CENTRAL_REPO = 'vpro-maven-central'
-		NEXUSIP = '172.31.249.96'
-		NEXUSPORT = '8081'
-		NEXUS_GRP_REPO = 'vpro-maven-group'
-        NEXUS_LOGIN = 'nexuslogin'
-        SONARSERVER = 'sonarserver'
-        SONARSCANNER = 'sonarscanner'
-        SLACK_CHANNEL = '#jenkinsci' // Channel name in Slack
+        SNAP_REPO         = 'vprofile-snapshot'
+        NEXUS_USER        = 'admin'
+        NEXUS_PASS        = 'admin123'
+        RELEASE_REPO      = 'vprofile-release'
+        CENTRAL_REPO      = 'vpro-maven-central'
+        NEXUSIP           = '172.31.249.96'
+        NEXUSPORT         = '8081'
+        NEXUS_GRP_REPO    = 'vpro-maven-group'
+        NEXUS_LOGIN       = 'nexuslogin'
+        SONARSERVER       = 'sonarserver'
+        SONARSCANNER      = 'sonarscanner'
+        SLACK_CHANNEL     = '#jenkinsci' // Channel name in Slack
         SLACK_CREDENTIAL_ID = 'slackbot-token' // ID in Jenkins Credentials
-        registryCredential = 'ecr:us-west-1:awscreds'
-        appRegistry = '739275440836.dkr.ecr.us-west-1.amazonaws.com/vprofileaapimg'
-        vprofileRegistry = 'https://739275440836.dkr.ecr.us-west-1.amazonaws.com'
+        registryCredential  = 'ecr:us-west-1:awscreds'
+        appRegistry         = '739275440836.dkr.ecr.us-west-1.amazonaws.com/vprofileaapimg'
+        vprofileRegistry    = 'https://739275440836.dkr.ecr.us-west-1.amazonaws.com'
     }
-    
+
     stages {
-        stage('Build'){
+        stage('Build') {
             steps {
                 sh 'mvn -s settings.xml -DskipTests install'
             }
@@ -37,14 +37,13 @@ pipeline {
             }
         }
 
-        stage('Test'){
+        stage('Test') {
             steps {
                 sh 'mvn -s settings.xml test'
             }
-
         }
 
-        stage('Checkstyle Analysis'){
+        stage('Checkstyle Analysis') {
             steps {
                 sh 'mvn -s settings.xml checkstyle:checkstyle'
             }
@@ -55,45 +54,45 @@ pipeline {
                 scannerHome = tool "${SONARSCANNER}"
             }
             steps {
-               withSonarQubeEnv("${SONARSERVER}") {
-                   sh '''${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=vprofile \
-                   -Dsonar.projectName=vprofile \
-                   -Dsonar.projectVersion=1.0 \
-                   -Dsonar.sources=src/ \
-                   -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
-                   -Dsonar.junit.reportsPath=target/surefire-reports/ \
-                   -Dsonar.jacoco.reportsPath=target/jacoco.exec \
-                   -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml'''
-              }
+                withSonarQubeEnv("${SONARSERVER}") {
+                    sh '''${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=vprofile \
+                    -Dsonar.projectName=vprofile \
+                    -Dsonar.projectVersion=1.0 \
+                    -Dsonar.sources=src/ \
+                    -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
+                    -Dsonar.junit.reportsPath=target/surefire-reports/ \
+                    -Dsonar.jacoco.reportsPath=target/jacoco.exec \
+                    -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml'''
+                }
             }
         }
 
-        stage("Quality Gate") {
+        stage('Quality Gate') {
             steps {
                 timeout(time: 1, unit: 'HOURS') {
-                    // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
-                    // true = set pipeline to UNSTABLE, false = don't
                     waitForQualityGate abortPipeline: true
                 }
             }
         }
 
-        stage("UploadArtifact"){
-            steps{
+        stage('UploadArtifact') {
+            steps {
                 nexusArtifactUploader(
-                  nexusVersion: 'nexus3',
-                  protocol: 'http',
-                  nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
-                  groupId: 'QA',
-                  version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
-                  repository: "${RELEASE_REPO}",
-                  credentialsId: "${NEXUS_LOGIN}",
-                  artifacts: [
-                    [artifactId: 'vproapp',
-                     classifier: '',
-                     file: 'target/vprofile-v2.war',
-                     type: 'war']
-                  ]
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
+                    groupId: 'QA',
+                    version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
+                    repository: "${RELEASE_REPO}",
+                    credentialsId: "${NEXUS_LOGIN}",
+                    artifacts: [
+                        [
+                            artifactId: 'vproapp',
+                            classifier: '',
+                            file: 'target/vprofile-v2.war',
+                            type: 'war'
+                        ]
+                    ]
                 )
             }
         }
@@ -101,30 +100,48 @@ pipeline {
         stage('Build App Image') {
             steps {
                 script {
-                    dockerImage = docker.build( appRegistry + ":$BUILD_NUMBER", "./Docker-files/app/multistage/")
+                    dockerImage = docker.build(appRegistry + ":$BUILD_NUMBER", "./Docker-files/app/multistage/")
                 }
             }
         }
-        
+
         stage('Upload App Image') {
-          steps{
-            script {
-              docker.withRegistry( vprofileRegistry, registryCredential ) {
-                dockerImage.push("$BUILD_NUMBER")
-                dockerImage.push('latest')
-              }
+            steps {
+                script {
+                    docker.withRegistry(vprofileRegistry, registryCredential) {
+                        dockerImage.push("$BUILD_NUMBER")
+                        dockerImage.push('latest')
+                    }
+                }
             }
-          }
         }
-
-
     }
+
     post {
         always {
             echo 'Slack Notifications.'
-            slackSend channel: '#jenkinscicd',
-                color: COLOR_MAP[currentBuild.currentResult],
-                message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
+            script {
+                // derive a color for the build result
+                def result = (currentBuild.currentResult ?: 'SUCCESS') as String
+                def color = [
+                    SUCCESS  : '#2eb886', // green
+                    FAILURE  : '#a30200', // red
+                    UNSTABLE : '#daa038', // yellow
+                    ABORTED  : '#9e9e9e',
+                    NOT_BUILT: '#9e9e9e'
+                ][result] ?: '#9e9e9e'
+
+                // prefer the env channel; fallback to the one you hardcoded earlier
+                def chan = env.SLACK_CHANNEL ?: '#jenkinscicd'
+
+                // if you configured a token credential in Jenkins, pass it here
+                slackSend(
+                    channel: chan,
+                    color: color,
+                    message: "*${result}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n${env.BUILD_URL}",
+                    tokenCredentialId: env.SLACK_CREDENTIAL_ID  // remove if using global Slack config
+                )
+            }
         }
     }
 }
