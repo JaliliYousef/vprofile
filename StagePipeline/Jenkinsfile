@@ -19,6 +19,9 @@ pipeline {
         SONARSCANNER = 'sonarscanner'
         SLACK_CHANNEL = '#jenkinsci' // Channel name in Slack
         SLACK_CREDENTIAL_ID = 'slackbot-token' // ID in Jenkins Credentials
+        registryCredential = 'ecr:us-west-1:awscreds'
+        appRegistry = '739275440836.dkr.ecr.us-west-1.amazonaws.com/vprofileaapimg'
+        vprofileRegistry = 'https://739275440836.dkr.ecr.us-west-1.amazonaws.com'
     }
     stages {
         stage('Build'){
@@ -87,6 +90,29 @@ pipeline {
     )
             }
         }
+
+        stage("Build App image") {
+            steps {
+                script{
+                    dockerImage = docker.build( appRegistry + ":$BUILD_NUMBER", "./Docker-files/app/multistage/" )
+
+                }
+                
+            }
+        }
+
+        stage ("Upload App image to ECR") {
+            steps {
+                script {
+                   docker.withRegistry(vprofileRegistry,registryCredential ) {
+                        dockerImage.push("$BUILD_NUMBER")
+                        dockerImage.push("latest")
+                   }
+                }
+            }
+        }
+
+
 
     }
      post {
