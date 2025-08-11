@@ -23,29 +23,33 @@ pipeline {
         appRegistry = '739275440836.dkr.ecr.us-west-1.amazonaws.com/vprofileaapimg'
         vprofileRegistry = 'https://739275440836.dkr.ecr.us-west-1.amazonaws.com'
     }
+    
     stages {
         stage('Build'){
             steps {
-                sh 'mvn -s settings.xml -DskipTests install -U'
+                sh 'mvn -s settings.xml -DskipTests install'
             }
             post {
                 success {
-                   echo 'Now  archiving the dammn artifacts'
-                   archiveArtifacts artifacts: '**/*.war'}
-                
+                    echo "Now Archiving."
+                    archiveArtifacts artifacts: '**/*.war'
+                }
             }
         }
+
         stage('Test'){
             steps {
-                sh 'mvn install -s settings.xml'
+                sh 'mvn -s settings.xml test'
+            }
 
-            }
         }
-        stage('SonarQube Analysis') {
+
+        stage('Checkstyle Analysis'){
             steps {
-             sh 'mvn checkstyle:checkstyle -s settings.xml'   
+                sh 'mvn -s settings.xml checkstyle:checkstyle'
             }
         }
+
         stage('Sonar Analysis') {
             environment {
                 scannerHome = tool "${SONARSCANNER}"
@@ -63,16 +67,19 @@ pipeline {
               }
             }
         }
-        stage('Quality Gate'){
-          steps {
-            timeout(time: 1, unit: 'HOURS') {
-                waitForQualityGate abortPipeline: true
-            }
 
-          } 
-        }
-        stage('UploadArtifact') {
+        stage("Quality Gate") {
             steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
+                    // true = set pipeline to UNSTABLE, false = don't
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        stage("UploadArtifact"){
+            steps{
                 nexusArtifactUploader(
                   nexusVersion: 'nexus3',
                   protocol: 'http',
@@ -86,62 +93,38 @@ pipeline {
                      classifier: '',
                      file: 'target/vprofile-v2.war',
                      type: 'war']
-               ] 
-    )
+                  ]
+                )
             }
         }
 
-        stage("Build App image") {
-            steps {
-                script{
-                     dockerImage = docker.build( appRegistry + ":$BUILD_NUMBER", "./Docker-files/app/multistage/")
-
-                }
-                
-            }
-        }
-
-        stage ("Upload App image to ECR") {
+        stage('Build App Image') {
             steps {
                 script {
-                   docker.withRegistry(vprofileRegistry,registryCredential ) {
-                        dockerImage.push("$BUILD_NUMBER")
-                        dockerImage.push("latest")
-                   }
+                    dockerImage = docker.build( appRegistry + ":$BUILD_NUMBER", "./Docker-files/app/multistage/")
                 }
             }
         }
-
+        
+        stage('Upload App Image') {
+          steps{
+            script {
+              docker.withRegistry( vprofileRegistry, registryCredential ) {
+                dockerImage.push("$BUILD_NUMBER")
+                dockerImage.push('latest')
+              }
+            }
+          }
+        }
 
 
     }
-     post {
-        success {
-            slackSend(
-                channel: "${env.SLACK_CHANNEL}",
-                color: 'good',
-                message: "✅ Job *${env.JOB_NAME}* #${env.BUILD_NUMBER} succeeded.\nCheck: ${env.BUILD_URL}",
-                tokenCredentialId: "${env.SLACK_CREDENTIAL_ID}",
-                
-                baseUrl: 'https://slack.com/api/',
-                botUser: true
-            )
-        }
-
-        failure {
-            slackSend(
-                channel: "${env.SLACK_CHANNEL}",
-                color: 'danger',
-                message: "❌ Job *${env.JOB_NAME}* #${env.BUILD_NUMBER} failed!\nCheck: ${env.BUILD_URL}",
-                tokenCredentialId: "${env.SLACK_CREDENTIAL_ID}",
-                baseUrl: 'https://slack.com/api/',
-                botUser: true
-            )
-        }
-
+    post {
         always {
-            echo 'Pipeline completed.'
+            echo 'Slack Notifications.'
+            slackSend channel: '#jenkinscicd',
+                color: COLOR_MAP[currentBuild.currentResult],
+                message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
         }
     }
-
 }
