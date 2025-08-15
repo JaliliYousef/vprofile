@@ -8,6 +8,8 @@ pipeline {
     environment {
         cluster = "vproappprod"
         service = "vproapp-task-service-3tql50m4"
+    }
+        
         
     stages {
         stage ('Deploy to Prod ecs'){
