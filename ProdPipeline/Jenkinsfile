@@ -10,45 +10,41 @@ pipeline {
         service = "vproapp-task-service-3tql50m4"
     }
         
-        
     stages {
-        stage ('Deploy to Prod ecs'){
+        stage('Deploy to Prod ecs') {
             steps {
                 withAWS(credentials: 'awscreds', region: 'us-west-1') {
                     sh 'aws ecs update-service --cluster ${cluster} --service ${service} --force-new-deployment'
                 }
             }
         }
-        
-
     }
-    //  post {
-    //     success {
-    //         slackSend(
-    //             channel: "${env.SLACK_CHANNEL}",
-    //             color: 'good',
-    //             message: "✅ Job *${env.JOB_NAME}* #${env.BUILD_NUMBER} succeeded.\nCheck: ${env.BUILD_URL}",
-    //             tokenCredentialId: "${env.SLACK_CREDENTIAL_ID}",
-                
-    //             baseUrl: 'https://slack.com/api/',
-    //             botUser: true
-    //         )
-    //     }
 
-    //     failure {
-    //         slackSend(
-    //             channel: "${env.SLACK_CHANNEL}",
-    //             color: 'danger',
-    //             message: "❌ Job *${env.JOB_NAME}* #${env.BUILD_NUMBER} failed!\nCheck: ${env.BUILD_URL}",
-    //             tokenCredentialId: "${env.SLACK_CREDENTIAL_ID}",
-    //             baseUrl: 'https://slack.com/api/',
-    //             botUser: true
-    //         )
-    //     }
+    post {
+        // success {
+        //     slackSend(
+        //         channel: "${env.SLACK_CHANNEL}",
+        //         color: 'good',
+        //         message: "✅ Job *${env.JOB_NAME}* #${env.BUILD_NUMBER} succeeded.\nCheck: ${env.BUILD_URL}",
+        //         tokenCredentialId: "${env.SLACK_CREDENTIAL_ID}",
+        //         baseUrl: 'https://slack.com/api/',
+        //         botUser: true
+        //     )
+        // }
+
+        // failure {
+        //     slackSend(
+        //         channel: "${env.SLACK_CHANNEL}",
+        //         color: 'danger',
+        //         message: "❌ Job *${env.JOB_NAME}* #${env.BUILD_NUMBER} failed!\nCheck: ${env.BUILD_URL}",
+        //         tokenCredentialId: "${env.SLACK_CREDENTIAL_ID}",
+        //         baseUrl: 'https://slack.com/api/',
+        //         botUser: true
+        //     )
+        // }
 
         always {
             echo 'Pipeline completed.'
         }
     }
-
 }
