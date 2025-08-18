@@ -3,6 +3,7 @@
 - JDK 17 or 21
 - Maven 3.9
 - MySQL 8
+-tomcat-8080
 
 # Technologies 
 - Spring MVC
