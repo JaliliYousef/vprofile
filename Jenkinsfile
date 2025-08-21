@@ -2,7 +2,7 @@ pipeline {
     agent any
     tools {
         maven "maven3"
-        jdk "jdk17"
+        jdk "jdk21"
     }
     
     environment {
@@ -21,6 +21,12 @@ pipeline {
     }
 
     stages {
+        stage('fetching from git'){
+            steps{
+              git branch: 'jenkins-ci', url: 'https://github.com/hkhcoder/vprofile-project.git'
+            }
+            
+        }
         stage('Build') {
             steps {
                 sh 'mvn -s settings.xml -DskipTests install'
