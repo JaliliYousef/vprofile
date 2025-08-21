@@ -49,8 +49,7 @@ pipeline {
             steps {
                 script {
                     def scannerHome = tool "${SONARSCANNER}"
-                    def nodePath = sh(script: "which node", returnStdout: true).trim()
-                    echo "Using Node.js from: ${nodePath}"
+                    
 
                     withSonarQubeEnv("${SONARSERVER}") {
                         sh "${scannerHome}/bin/sonar-scanner " +
