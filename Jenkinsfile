@@ -10,7 +10,7 @@ pipeline {
         SNAP_REPO = 'vprofile-snapshot'
         NEXUS_USER = 'admin'
         NEXUS_PASS = 'redhat'
-        RELEASE_REPO = 'patel-repo'
+        RELEASE_REPO = 'patel-repo-release'
         CENTRAL_REPO = 'patel-maven-central'
         NEXUSIP = '192.168.239.130'
         NEXUSPORT = '8081'
