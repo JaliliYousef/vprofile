@@ -67,7 +67,7 @@ pipeline {
                            "-Dsonar.junit.reportsPath=target/surefire-reports/ " +
                            "-Dsonar.jacoco.reportsPath=target/jacoco.exec "
                            // You may re-enable the lines below if needed:
-                           // + "-Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml "
+                            + "-Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml "
                            // + "-Dsonar.nodejs.executable=${nodePath}"
                     }
                 }
