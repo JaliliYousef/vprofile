@@ -1,101 +1,71 @@
 pipeline {
+    
     agent any
-
+    
     tools {
-        jdk "JDK17"
+        jdk "JDK17"    
         maven "MAVEN3.9"
     }
-
-    environment {
-        NEXUS_VERSION       = "nexus3"
-        NEXUS_PROTOCOL      = "http"
-        NEXUS_URL           = "172.31.40.209:8081"
-        NEXUS_REPOSITORY    = "vprofile-release"
-        NEXUS_REPO_ID       = "vprofile-release"
-        NEXUS_CREDENTIAL_ID = "nexuslogin"
-        ARTVERSION          = "${env.BUILD_ID}"
-    }
-
-    stages {
-
-        stage('Build') {
+    
+    stages{
+        
+        stage('BUILD'){
             steps {
                 sh 'mvn clean install -DskipTests'
             }
             post {
                 success {
+                    echo 'Now Archiving...'
                     archiveArtifacts artifacts: '**/target/*.war'
                 }
             }
         }
 
-        stage('Unit Test') {
+        stage('UNIT TEST'){
             steps {
                 sh 'mvn test'
             }
         }
 
-        stage('Integration Test') {
+        stage('INTEGRATION TEST'){
             steps {
                 sh 'mvn verify -DskipUnitTests'
             }
         }
-
-        stage('Code Analysis with Checkstyle') {
+        
+        stage ('CODE ANALYSIS WITH CHECKSTYLE'){
             steps {
                 sh 'mvn checkstyle:checkstyle'
             }
+            post {
+                success {
+                    echo 'Generated Analysis Result'
+                }
+            }
         }
 
-        stage('Code Analysis with SonarQube') {
+        stage('CODE ANALYSIS with SONARQUBE') {
             environment {
                 scannerHome = tool 'sonarscanner4'
             }
             steps {
                 withSonarQubeEnv('sonar-pro') {
-                    sh '''
-                        ${scannerHome}/bin/sonar-scanner \
-                          -Dsonar.projectKey=vprofile \
-                          -Dsonar.projectName=vprofile-repo \
-                          -Dsonar.projectVersion=1.0 \
-                          -Dsonar.sources=src \
-                          -Dsonar.java.binaries=target/classes \
-                          -Dsonar.junit.reportsPath=target/surefire-reports \
-                          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
-                          -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
-                    '''
+                    withCredentials([string(credentialsId: 'sonar-auth-token', variable: 'SONAR_AUTH_TOKEN')]) {
+                        sh '''${scannerHome}/bin/sonar-scanner \
+                            -Dsonar.projectKey=vprofile \
+                            -Dsonar.projectName=vprofile-repo \
+                            -Dsonar.projectVersion=1.0 \
+                            -Dsonar.sources=src/ \
+                            -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
+                            -Dsonar.junit.reportsPath=target/surefire-reports/ \
+                            -Dsonar.jacoco.reportsPath=target/jacoco.exec \
+                            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml \
+                            -Dsonar.login=$SONAR_AUTH_TOKEN'''
+                    }
                 }
 
                 timeout(time: 10, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
-                }
-            }
-        }
-
-        stage("Publish to Nexus Repository Manager") {
-            steps {
-                script {
-                    def pom = readMavenPom file: "pom.xml"
-                    def filesByGlob = findFiles(glob: "target/*.${pom.packaging}")
-                    if (filesByGlob.length == 0) {
-                        error "*** Artifact not found in target folder"
-                    }
-                    def artifactPath = filesByGlob[0].path
-                    echo "*** Uploading ${artifactPath} to Nexus ***"
-
-                    nexusArtifactUploader(
-                        nexusVersion: NEXUS_VERSION,
-                        protocol: NEXUS_PROTOCOL,
-                        nexusUrl: NEXUS_URL,
-                        groupId: pom.groupId,
-                        version: ARTVERSION,
-                        repository: NEXUS_REPOSITORY,
-                        credentialsId: NEXUS_CREDENTIAL_ID,
-                        artifacts: [
-                            [artifactId: pom.artifactId, classifier: '', file: artifactPath, type: pom.packaging],
-                            [artifactId: pom.artifactId, classifier: '', file: "pom.xml", type: "pom"]
-                        ]
-                    )
                 }
             }
         }
