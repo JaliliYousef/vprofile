@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'local',
+                git branch: 'N8880-patch-1',
                     url: 'https://github.com/N8880/cloned-vprofile-project.git'
             }
         }
